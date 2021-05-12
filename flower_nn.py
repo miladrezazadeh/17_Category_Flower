@@ -34,6 +34,11 @@ from sklearn.model_selection import train_test_split
 train_images, test_images, train_targets, test_targets = train_test_split(images,
 targets, train_size = 0.8, random_state = 42)
 
-################################################################3
+#################################################################
 
+## Prepping the data
+## The targets also need to be changed to categorical format
+import tensorflow.keras.utils as ku
+train_targets = ku.to_categorical(train_targets, 17)
+test_targets = ku.to_categorical(test_targets, 17)
 
