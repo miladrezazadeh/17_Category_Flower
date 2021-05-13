@@ -42,3 +42,57 @@ import tensorflow.keras.utils as ku
 train_targets = ku.to_categorical(train_targets, 17)
 test_targets = ku.to_categorical(test_targets, 17)
 
+#################################################################
+
+## Building the NN model
+## Modified from lecture5_code
+def get_model(numfm, numnodes, input_shape = (50, 50, 3),
+              output_size = 17):
+
+    """
+    This function returns a convolution neural network Keras model,
+    with numfm feature maps and numnodes neurons in the
+    fully-connected layer.
+
+    Inputs:
+    - numfm: int, the number of feature maps in the convolution layer.
+
+    - numnodes: int, the number of nodes in the fully-connected layer.
+
+    - intput_shape: tuple, the shape of the input data,
+    default = (50, 50, 3).
+
+    - output_size: int, the number of nodes in the output layer,
+      default = 17.
+
+    Output: the constructed Keras model.
+
+    """
+
+    ## Initialize the model.
+    model = km.Sequential()
+
+    ## Add a 2D convolution layer, with numfm feature maps.
+    model.add(kl.Conv2D(numfm, kernel_size = (5, 5),
+                        input_shape = input_shape,
+                        activation = 'relu'))
+
+    ## Add a max pooling layer.
+    model.add(kl.MaxPooling2D(pool_size = (2, 2),
+                              strides = (2, 2)))
+
+    ## Convert the network from 2D to 1D.
+    model.add(kl.Flatten())
+
+    ## Add a fully-connected layer.
+    model.add(kl.Dense(numnodes,
+                       activation = 'tanh'))
+
+    ## Add the output layer.
+    model.add(kl.Dense(10, activation = 'softmax'))
+
+    ## Return the model.
+    return model
+
+#################################################################
+
