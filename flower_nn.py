@@ -16,31 +16,70 @@ import urllib
 import sklearn.model_selection as skms
 import warnings
 warnings.filterwarnings("ignore")
+warnings.filterwarnings('always')
+
+print("Using Tensorflow backend.")
 
 #################################################################
 
+## Function for downloading datasets from url
+## this snippet of code is derived from original source code:
+## https://github.com/tflearn/tflearn/blob/master/tflearn/datasets/cifar10.py
+
+def download(filename, source_url, work_directory):
+    if not os.path.exists(work_directory): #check if the folder exists; if not make dir
+        os.mkdir(work_directory)
+    filepath = os.path.join(work_directory, filename)
+    if not os.path.exists(filepath): # check if file exists; if not, download
+        print("Downloading file, Please wait...")
+        filepath, _ = urllib.request.urlretrieve(source_url + filename, # this is a function to download files
+                                                 filepath)
+        statinfo = os.stat(filepath)
+        print(('Succesfully downloaded', filename, statinfo.st_size, 'bytes.'))
+    return filepath
+
+
+## Download the input dataset
+#download("50x50flowers.images.npy", "https://support.scinet.utoronto.ca/education/get.php/50x50flowers.images.npy",
+        # "17_Category_Flower_input")
+
+## Download the target dataset
+#download("50x50flowers.targets.npy", "https://support.scinet.utoronto.ca/education/get.php/50x50flowers.targets.npy",
+      #  "17_Category_Flower_input")
+
+#######################################################################
 ## Read the flower dataset, images and targets
+
 print("Reading flowers input file.")
 images = np.load('50x50flowers.images.npy')
-print("Reading flowers target file.")
-targets = np.load('50x50flowers.targets.npy')
+#print("Reading flowers target file.")
+#targets = np.load('50x50flowers.targets.npy')
 ## targets are converted to np array (1360,1)
-targets = np.asarray(targets).reshape(1360,1)
+#targets = np.asarray(targets).reshape(1360,1)
 
 #################################################################
 
 ## split data into training and test
-from sklearn.model_selection import train_test_split
-train_images, test_images, train_targets, test_targets = train_test_split(images,
-targets, train_size = 0.8, random_state = 42)
+#from sklearn.model_selection import train_test_split
+#train_images, test_images, train_targets, test_targets = train_test_split(images, targets)
+
+
+#print(train_images.shape)
+#print(test_images.shape)
+#print(train_targets.shape)
+#print(test_targets.shape)
+
 
 #################################################################
 
 ## Prepping the data
 ## The targets also need to be changed to categorical format
-import tensorflow.keras.utils as ku
-train_targets = ku.to_categorical(train_targets, 17)
-test_targets = ku.to_categorical(test_targets, 17)
+#import tensorflow.keras.utils as ku
+#train_targets = ku.to_categorical(train_targets, 16)
+#test_targets = ku.to_categorical(test_targets, 16)
+
+#print(train_targets.shape)
+#print(test_targets.shape)
 
 #################################################################
 
@@ -89,10 +128,22 @@ def get_model(numfm, numnodes, input_shape = (50, 50, 3),
                        activation = 'tanh'))
 
     ## Add the output layer.
-    model.add(kl.Dense(10, activation = 'softmax'))
+    model.add(kl.Dense(17, activation = 'softmax'))
 
     ## Return the model.
     return model
 
 #################################################################
 
+## Implementing the model
+
+#model = get_model(20, 100)
+
+## Compiling the model
+#model.compile(loss = "categorical_crossentropy", optimizer = "sgd",
+                  #  metrics = ['accuracy'])
+
+## Fiting the model
+#fit = model.fit(train_images, test_images, epochs = 30, batch_size = 100, verbose = 2)
+
+## score of the training datasets
