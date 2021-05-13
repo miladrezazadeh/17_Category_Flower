@@ -10,6 +10,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import pickle
 import keras.models as km, keras.layers as kl
 import os
 import urllib
@@ -51,7 +52,8 @@ def download(filename, source_url, work_directory):
 ## Read the flower dataset, images and targets
 
 print("Reading flowers input file.")
-images = np.load('50x50flowers.images.npy')
+images = np.load('17_Category_Flower_input/50x50flowers.images.npy',
+                 allow_pickle=True, fix_imports=True, encoding='latin1')
 #print("Reading flowers target file.")
 #targets = np.load('50x50flowers.targets.npy')
 ## targets are converted to np array (1360,1)
