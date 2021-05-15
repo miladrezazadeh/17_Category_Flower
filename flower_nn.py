@@ -21,7 +21,7 @@ warnings.filterwarnings('always')
 
 print("Using Tensorflow backend.")
 
-#################################################################
+#######################################################################################
 
 ## Function for downloading datasets from url
 ## this snippet of code is derived from original source code:
@@ -41,51 +41,47 @@ def download(filename, source_url, work_directory):
 
 
 ## Download the input dataset
-#download("50x50flowers.images.npy", "https://support.scinet.utoronto.ca/education/get.php/50x50flowers.images.npy",
+#download("50x50flowers.images.npy",
+        #  "https://support.scinet.utoronto.ca/education/get.php/50x50flowers.images.npy",
         # "17_Category_Flower_input")
 
 ## Download the target dataset
-#download("50x50flowers.targets.npy", "https://support.scinet.utoronto.ca/education/get.php/50x50flowers.targets.npy",
+#download("50x50flowers.targets.npy",
+      # "https://support.scinet.utoronto.ca/education/get.php/50x50flowers.targets.npy",
       #  "17_Category_Flower_input")
 
-#######################################################################
+#######################################################################################
+
 ## Read the flower dataset, images and targets
 
 print("Reading flowers input file.")
 images = np.load('17_Category_Flower_input/50x50flowers.images.npy',
                  allow_pickle=True, fix_imports=True, encoding='latin1')
-#print("Reading flowers target file.")
-#targets = np.load('50x50flowers.targets.npy')
+print("Reading flowers target file.")
+targets = np.load('17_Category_Flower_input/50x50flowers.targets.npy',
+                  allow_pickle=True, fix_imports=True, encoding='latin1')
+
 ## targets are converted to np array (1360,1)
 #targets = np.asarray(targets).reshape(1360,1)
 
-#################################################################
+#######################################################################################
 
 ## split data into training and test
-#from sklearn.model_selection import train_test_split
-#train_images, test_images, train_targets, test_targets = train_test_split(images, targets)
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(images, targets,
+                                                    test_size = 0.2, random_state = 42)
 
-
-#print(train_images.shape)
-#print(test_images.shape)
-#print(train_targets.shape)
-#print(test_targets.shape)
-
-
-#################################################################
+######################################################################################
 
 ## Prepping the data
 ## The targets also need to be changed to categorical format
-#import tensorflow.keras.utils as ku
-#train_targets = ku.to_categorical(train_targets, 16)
-#test_targets = ku.to_categorical(test_targets, 16)
+import tensorflow.keras.utils as ku
+y_train = ku.to_categorical(y_train, 18)
+y_test = ku.to_categorical(y_test, 18)
 
-#print(train_targets.shape)
-#print(test_targets.shape)
+######################################################################################
 
-#################################################################
-
-## Building the NN model
+## Building the CNN model
 ## Modified from lecture5_code
 def get_model(numfm, numnodes, input_shape = (50, 50, 3),
               output_size = 17):
@@ -109,7 +105,7 @@ def get_model(numfm, numnodes, input_shape = (50, 50, 3),
     Output: the constructed Keras model.
 
     """
-
+    print("Building network.")
     ## Initialize the model.
     model = km.Sequential()
 
@@ -139,7 +135,7 @@ def get_model(numfm, numnodes, input_shape = (50, 50, 3),
 
 ## Implementing the model
 
-#model = get_model(20, 100)
+model = get_model(20, 100)
 
 ## Compiling the model
 #model.compile(loss = "categorical_crossentropy", optimizer = "sgd",
