@@ -134,12 +134,12 @@ def get_model(numfm, numnodes, input_shape = (50, 50, 3),
 #################################################################
 
 ## Implementing the model
-
 model = get_model(20, 100)
+# print(model.summary())
 
 ## Compiling the model
-#model.compile(loss = "categorical_crossentropy", optimizer = "sgd",
-                  #  metrics = ['accuracy'])
+# model.compile(loss = "categorical_crossentropy", optimizer = "sgd",
+#                    metrics = ['accuracy'])
 
 ## Fiting the model
 #fit = model.fit(train_images, test_images, epochs = 30, batch_size = 100, verbose = 2)
