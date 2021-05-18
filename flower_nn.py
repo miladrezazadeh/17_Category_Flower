@@ -76,14 +76,6 @@ x_test = x_test / 255.0
 
 ######################################################################################
 
-## Prepping the data
-## The targets also need to be changed to categorical format
-import tensorflow.keras.utils as ku
-y_train = ku.to_categorical(y_train, 18)
-y_test = ku.to_categorical(y_test, 18)
-
-######################################################################################
-
 ## Prevent overfitting with Data augmentation
 ## this snippet of code is derived from original source code:
 ## https://www.kaggle.com/rajmehra03/flower-recognition-cnn-keras
@@ -105,13 +97,19 @@ datagen = ImageDataGenerator(
 
 datagen.fit(x_train)
 
+######################################################################################
 
+## Prepping the data
+## The targets also need to be changed to categorical format
+import tensorflow.keras.utils as ku
+y_train = ku.to_categorical(y_train, 18)
+y_test = ku.to_categorical(y_test, 18)
 
 ######################################################################################
-## Building the CNN model
+## Building the CNN model with two convolutional layers, maxpooling, and dropout
 ## Modified from lecture5_code
-def get_model(numfm, numnodes, input_shape = (50, 50, 3),
-              output_size = 17):
+def get_model(numfm, numnodes, d_rate=0.5, input_shape=(50, 50, 3),
+              output_size=17):
 
     """
     This function returns a convolution neural network Keras model,
@@ -123,6 +121,9 @@ def get_model(numfm, numnodes, input_shape = (50, 50, 3),
 
     - numnodes: int, the number of nodes in the fully-connected layer.
 
+    - d_rate: float, fraction of nodes to be dropped out by the
+      dropout procedure.
+
     - intput_shape: tuple, the shape of the input data,
     default = (50, 50, 3).
 
@@ -133,27 +134,45 @@ def get_model(numfm, numnodes, input_shape = (50, 50, 3),
 
     """
     print("Building network.")
+
     ## Initialize the model.
     model = km.Sequential()
 
     ## Add a 2D convolution layer, with numfm feature maps.
-    model.add(kl.Conv2D(numfm, kernel_size = (5, 5),
-                        input_shape = input_shape,
-                        activation = 'relu'))
+    model.add(kl.Conv2D(numfm, kernel_size=(3, 3),
+                        input_shape=input_shape,
+                        activation='relu'))
 
     ## Add a max pooling layer.
-    model.add(kl.MaxPooling2D(pool_size = (2, 2),
-                              strides = (2, 2)))
+    model.add(kl.MaxPooling2D(pool_size=(2, 2),
+                              strides=(2, 2)))
+
+    ## Add dropout to convolutional layer
+    model.add(kl.Dropout(d_rate,
+                         name='dropout1'))
+
+    ## Add a 2D convolution layer, with numfm feature maps.
+    model.add(kl.Conv2D(numfm, kernel_size=(3, 3),
+                        input_shape=input_shape,
+                        activation='relu'))
+
+    ## Add a max pooling layer.
+    model.add(kl.MaxPooling2D(pool_size=(2, 2),
+                              strides=(2, 2)))
+
+    ## Add dropout to convolutional layer
+    model.add(kl.Dropout(d_rate,
+                         name='dropout2'))
 
     ## Convert the network from 2D to 1D.
     model.add(kl.Flatten())
 
     ## Add a fully-connected layer.
     model.add(kl.Dense(numnodes,
-                       activation = 'tanh'))
+                       activation='tanh'))
 
     ## Add the output layer.
-    model.add(kl.Dense(18, activation = 'softmax'))
+    model.add(kl.Dense(18, activation='softmax'))
 
     ## Return the model.
     return model
@@ -162,10 +181,11 @@ def get_model(numfm, numnodes, input_shape = (50, 50, 3),
 
 ## Implementing the model
 model = get_model(20, 100)
+
 # print(model.summary())
 
 ## Compiling the model
-model.compile(loss = "categorical_crossentropy", optimizer = "sgd",
+model.compile(loss = "categorical_crossentropy", optimizer = "adam",
                    metrics = ['accuracy'])
 
 ## Fiting the model
