@@ -190,6 +190,8 @@ model.compile(loss = "categorical_crossentropy", optimizer = "adam",
 
 ## Fiting the model
 print("Training network.")
-fit = model.fit(x_train, y_train, epochs = 30, batch_size = 100, verbose = 2)
+history = model.fit(datagen.flow(x_train, y_train, batch_size=32),
+          steps_per_epoch=len(x_train) / 32, epochs=100)
 
 ## score of the training datasets
+print("The training score is ", model.evaluate(x_train, y_train))
