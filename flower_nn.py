@@ -57,19 +57,22 @@ def download(filename, source_url, work_directory):
 print("Reading flowers input file.")
 images = np.load('17_Category_Flower_input/50x50flowers.images.npy',
                  allow_pickle=True, fix_imports=True, encoding='latin1')
+
 print("Reading flowers target file.")
 targets = np.load('17_Category_Flower_input/50x50flowers.targets.npy',
                   allow_pickle=True, fix_imports=True, encoding='latin1')
-
-## targets are converted to np array (1360,1)
-#targets = np.asarray(targets).reshape(1360,1)
 
 #######################################################################################
 
 ## split data into training and test
 from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(images, targets,
-                                                    test_size = 0.2, random_state = 42)
+                                                    test_size = 0.25, random_state = 42)
+
+######################################################################################
+## Normalizing the training data
+x_train = x_train / 255.0
+x_test = x_test / 255.0
 
 ######################################################################################
 
@@ -126,7 +129,7 @@ def get_model(numfm, numnodes, input_shape = (50, 50, 3),
                        activation = 'tanh'))
 
     ## Add the output layer.
-    model.add(kl.Dense(17, activation = 'softmax'))
+    model.add(kl.Dense(18, activation = 'softmax'))
 
     ## Return the model.
     return model
@@ -138,10 +141,11 @@ model = get_model(20, 100)
 # print(model.summary())
 
 ## Compiling the model
-# model.compile(loss = "categorical_crossentropy", optimizer = "sgd",
-#                    metrics = ['accuracy'])
+model.compile(loss = "categorical_crossentropy", optimizer = "sgd",
+                   metrics = ['accuracy'])
 
 ## Fiting the model
-#fit = model.fit(train_images, test_images, epochs = 30, batch_size = 100, verbose = 2)
+print("Training network.")
+fit = model.fit(x_train, y_train, epochs = 30, batch_size = 100, verbose = 2)
 
 ## score of the training datasets
