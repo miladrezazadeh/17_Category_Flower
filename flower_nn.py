@@ -84,6 +84,30 @@ y_test = ku.to_categorical(y_test, 18)
 
 ######################################################################################
 
+## Prevent overfitting with Data augmentation
+## this snippet of code is derived from original source code:
+## https://www.kaggle.com/rajmehra03/flower-recognition-cnn-keras
+## we are trying to generate more (fake) data with random rotation angle, zoom, flip, etc.
+
+from keras.preprocessing.image import ImageDataGenerator
+datagen = ImageDataGenerator(
+        featurewise_center=False,  # set input mean to 0 over the dataset
+        samplewise_center=False,  # set each sample mean to 0
+        featurewise_std_normalization=False,  # divide inputs by std of the dataset
+        samplewise_std_normalization=False,  # divide each input by its std
+        zca_whitening=False,  # apply ZCA whitening
+        rotation_range=10,  # randomly rotate images in the range (degrees, 0 to 180)
+        zoom_range = 0.1, # Randomly zoom image
+        width_shift_range=0.2,  # randomly shift images horizontally (fraction of total width)
+        height_shift_range=0.2,  # randomly shift images vertically (fraction of total height)
+        horizontal_flip=True,  # randomly flip images
+        vertical_flip=False)  # randomly flip images
+
+datagen.fit(x_train)
+
+
+
+######################################################################################
 ## Building the CNN model
 ## Modified from lecture5_code
 def get_model(numfm, numnodes, input_shape = (50, 50, 3),
